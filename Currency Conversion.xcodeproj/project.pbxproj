@@ -32,9 +32,11 @@
 		884CE657285398CB003A5CD1 /* RequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884CE656285398CB003A5CD1 /* RequestManager.swift */; };
 		884CE6592853B35F003A5CD1 /* TestURLManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884CE6582853B35F003A5CD1 /* TestURLManager.swift */; };
 		884CE65B2853CE44003A5CD1 /* CurrencyConversionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884CE65A2853CE44003A5CD1 /* CurrencyConversionViewModel.swift */; };
+		888C098628578A7400868573 /* TestCurrencyGridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888C098528578A7400868573 /* TestCurrencyGridViewModel.swift */; };
+		888C098828578B7800868573 /* BaseTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888C098728578B7800868573 /* BaseTestCase.swift */; };
 		88AC938D285541CE00847DFD /* ConversionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC938C285541CE00847DFD /* ConversionDataSource.swift */; };
 		88AC93912855E2DF00847DFD /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC93902855E2DF00847DFD /* SearchBar.swift */; };
-		88AC93932855ED5700847DFD /* testConversionDataSourceTEst.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC93922855ED5700847DFD /* testConversionDataSourceTEst.swift */; };
+		88AC93932855ED5700847DFD /* TestConversionDataSourceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC93922855ED5700847DFD /* TestConversionDataSourceTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,9 +85,11 @@
 		884CE656285398CB003A5CD1 /* RequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestManager.swift; sourceTree = "<group>"; };
 		884CE6582853B35F003A5CD1 /* TestURLManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestURLManager.swift; sourceTree = "<group>"; };
 		884CE65A2853CE44003A5CD1 /* CurrencyConversionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyConversionViewModel.swift; sourceTree = "<group>"; };
+		888C098528578A7400868573 /* TestCurrencyGridViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCurrencyGridViewModel.swift; sourceTree = "<group>"; };
+		888C098728578B7800868573 /* BaseTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTestCase.swift; sourceTree = "<group>"; };
 		88AC938C285541CE00847DFD /* ConversionDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversionDataSource.swift; sourceTree = "<group>"; };
 		88AC93902855E2DF00847DFD /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
-		88AC93922855ED5700847DFD /* testConversionDataSourceTEst.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testConversionDataSourceTEst.swift; sourceTree = "<group>"; };
+		88AC93922855ED5700847DFD /* TestConversionDataSourceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConversionDataSourceTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -175,7 +179,9 @@
 				884CE63528538B73003A5CD1 /* Currency_ConversionTests.swift */,
 				884CE6582853B35F003A5CD1 /* TestURLManager.swift */,
 				884CD1B92854D4FD00DCEE2A /* TestCurrencyConversionViewModel.swift */,
-				88AC93922855ED5700847DFD /* testConversionDataSourceTEst.swift */,
+				88AC93922855ED5700847DFD /* TestConversionDataSourceTest.swift */,
+				888C098528578A7400868573 /* TestCurrencyGridViewModel.swift */,
+				888C098728578B7800868573 /* BaseTestCase.swift */,
 			);
 			path = "Currency ConversionTests";
 			sourceTree = "<group>";
@@ -404,8 +410,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				884CE63628538B73003A5CD1 /* Currency_ConversionTests.swift in Sources */,
+				888C098628578A7400868573 /* TestCurrencyGridViewModel.swift in Sources */,
 				884CD1BA2854D4FD00DCEE2A /* TestCurrencyConversionViewModel.swift in Sources */,
-				88AC93932855ED5700847DFD /* testConversionDataSourceTEst.swift in Sources */,
+				88AC93932855ED5700847DFD /* TestConversionDataSourceTest.swift in Sources */,
+				888C098828578B7800868573 /* BaseTestCase.swift in Sources */,
 				884CE6592853B35F003A5CD1 /* TestURLManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

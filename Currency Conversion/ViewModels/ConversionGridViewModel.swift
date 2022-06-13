@@ -20,7 +20,9 @@ class ConversionGridViewModel: ObservableObject {
         self.dataSource = dataSource
         self.amount = amount
     }
-    
+}
+
+extension ConversionGridViewModel {
     func getCountryName(for code: String) -> String {
         return dataSource.getcountryName(code: code)
     }
@@ -50,7 +52,6 @@ class ConversionGridViewModel: ObservableObject {
     }
     
     func getCountryCodes() -> [String] {
-        print(dataSource.getCountryCodes())
         return dataSource.getCountryCodes()
     }
 }

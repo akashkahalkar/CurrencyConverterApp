@@ -13,7 +13,7 @@ import SwiftUI
 class CurrencyConversionViewModel: ObservableObject {
     
     private let manager: RequestManager
-    let coreDataManager: DataController
+    private let coreDataManager: DataController
     
     var dataSource = ConversionDataSource(countryCodeMapping: [],
                                           conversionRateMapping: nil) {
@@ -39,7 +39,9 @@ class CurrencyConversionViewModel: ObservableObject {
         coreDataManager = DataController.shared
         fetchData()
     }
-    
+}
+
+extension CurrencyConversionViewModel {
     func fetchData(forceUpdate: Bool = false) {
         Task {
             isLoading = true
@@ -57,6 +59,14 @@ class CurrencyConversionViewModel: ObservableObject {
             self.base = dataSource.getBase()
         }
 
+    }
+    
+    func parseAmount(_ s: String) -> (amount: Double?, error: String) {
+        if let amount = Double(s.trimmingCharacters(in: .whitespacesAndNewlines)) {
+            return (amount, "")
+        } else {
+            return (nil, Constants.ErrorMessages.EnterValidAmount)
+        }
     }
     
     private func loadCountryNameMapings() async -> [ContryCodeMapping] {
@@ -138,13 +148,4 @@ class CurrencyConversionViewModel: ObservableObject {
             throw OERError.Database.failedToSave
         }
     }
-    
-    func parseAmount(_ s: String) -> (amount: Double?, error: String) {
-        if let amount = Double(s.trimmingCharacters(in: .whitespacesAndNewlines)) {
-            return (amount, "")
-        } else {
-            return (nil, Constants.ErrorMessages.EnterValidAmount)
-        }
-    }
-
 }

@@ -194,8 +194,18 @@ extension CurrencyConversionView {
                 }.padding(.horizontal)
             }
             getPickerView()
+//            if let licenseURL = viewModel.dataSource.getLicenseURL() {
+//                addTermsAndCondition(l: licenseURL)
+//            }
         }.background(.ultraThinMaterial)
             .cornerRadius(16)
             .shadow(color: .black.opacity(0.4), radius: 10, x: 1, y: 1)
+    }
+    
+    func addTermsAndCondition(l: URL) -> some View {
+        HStack {
+            Link("License of Use", destination: l)
+            //Link("Disclaimer", destination: d)
+        }.padding(.bottom, 8)
     }
 }

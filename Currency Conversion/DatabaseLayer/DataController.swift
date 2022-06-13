@@ -65,7 +65,7 @@ extension DataController {
             try context.save()
         }
         catch {
-            
+            throw OERError.Database.failedToSave
         }
     }
     

@@ -12,11 +12,11 @@ class TestURLManager: XCTestCase {
     
     private var sut: OERURLManager?
     
-    override func setUpWithError() throws {
+    override func setUp() {
         sut = OERURLManager("TEST")
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() {
         sut = nil
     }
     
