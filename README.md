@@ -12,6 +12,7 @@ Know issue
 - search need in Country selection list
 - key board do not get dismissed when scrolling on list
 - Toat should be visible when tapped on amount
+- last update date is broken
 
 
 ### Screenshots
