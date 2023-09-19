@@ -31,13 +31,14 @@ class TestBase: XCTestCase {
             crm.disclaimer = ""
             crm.license = ""
             crm.timestamp = 161234
-            // using force unwrap due to time constraints
             crm.addToMapping(getConversionRate(base: "TST", amount: 2.0))
             crm.addToMapping(getConversionRate(base: "BSE", amount: 1.0))
-            return ConversionDataSource(countryCodeMapping: [
+            let countryCodeMapping = [
                 getCountryCodeMapping(base: "BSE", countryName: "Base"),
-                getCountryCodeMapping(base: "TST", countryName: "TEST")],
-                                       conversionRateMapping: crm)
+                getCountryCodeMapping(base: "TST", countryName: "TEST")
+            ]
+            return ConversionDataSource(countryCodeMapping: countryCodeMapping,
+                                        conversionRateMapping: crm)
         }
         
         return nil

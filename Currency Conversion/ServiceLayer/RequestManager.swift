@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Metal
 
 class RequestManager {
     //this could have been a singleton but avoided due to injection

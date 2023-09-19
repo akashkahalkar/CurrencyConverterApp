@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 struct ConversionRateResponse: Codable {
     let disclaimer: String
     let license: String
