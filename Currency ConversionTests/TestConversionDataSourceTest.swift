@@ -41,7 +41,7 @@ class TestConversionDataSource: TestBase {
     }
     
     func testGetCountryCodes() {
-        XCTAssertEqual(sut?.getCountryCodes(), ["TST", "BSE"])
+        XCTAssertEqual(sut?.getCountryCodes(), ["BSE", "TST"])
     }
     
     func testGetBase() {
