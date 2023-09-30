@@ -1,0 +1,105 @@
+
+.DS_Store
+build/.DS_Store
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/all-product-headers.yaml
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/assetcatalog_dependencies
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/assetcatalog_generated_info.plist
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Currency Conversion-all-non-framework-target-headers.hmap
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Currency Conversion-all-target-headers.hmap
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Currency Conversion-generated-files.hmap
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Currency Conversion-own-target-headers.hmap
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Currency Conversion-project-headers.hmap
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Currency Conversion.app.xcent
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Currency Conversion.app.xcent.der
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Currency Conversion.hmap
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/DerivedSources/Currency_Conversion-Swift.h
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/DerivedSources/Entitlements.plist
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/empty-Currency Conversion.plist
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/AppConfigParser.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/AppConfigParser.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Constants.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Constants.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ContryCodeMapping+CoreDataClass.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ContryCodeMapping+CoreDataClass.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ContryCodeMapping+CoreDataProperties.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ContryCodeMapping+CoreDataProperties.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionDataSource.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionDataSource.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionGridView.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionGridView.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionGridViewModel.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionGridViewModel.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionRateMapping+CoreDataClass.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionRateMapping+CoreDataClass.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionRateMapping+CoreDataProperties.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionRateMapping+CoreDataProperties.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionRates+CoreDataClass.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionRates+CoreDataClass.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionRates+CoreDataProperties.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/ConversionRates+CoreDataProperties.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency Conversion-master.d
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency Conversion-master.dia
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency Conversion-master.swiftdeps
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency Conversion-master.swiftdeps~
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency Conversion-OutputFileMap.json
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency Conversion.LinkFileList
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency Conversion.SwiftFileList
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency Conversion_dependency_info.dat
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency_Conversion-Swift.h
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency_Conversion.abi.json
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency_Conversion.swiftdoc
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency_Conversion.swiftmodule
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency_Conversion.swiftsourceinfo
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency_ConversionApp.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/Currency_ConversionApp.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/CurrencyConversionView.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/CurrencyConversionView.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/CurrencyConversionViewModel.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/CurrencyConversionViewModel.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/DataController.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/DataController.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/dummyInput-1.swift
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/LatestConversionRate.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/LatestConversionRate.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/RequestManager.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/RequestManager.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/SearchBar.o
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/SearchBar.stringsdata
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/Objects-normal/arm64/supplementaryOutputs-1
+build/Currency Conversion.build/Release-iphoneos/Currency Conversion.build/SwiftStdLibToolInputDependencies.dep
+build/EagerLinkingTBDs/.DS_Store
+build/Release-iphoneos/.DS_Store
+build/Release-iphoneos/Currency Conversion.app.dSYM/Contents/Info.plist
+build/Release-iphoneos/Currency Conversion.app.dSYM/Contents/Resources/DWARF/Currency Conversion
+build/Release-iphoneos/Currency Conversion.app/_CodeSignature/CodeResources
+build/Release-iphoneos/Currency Conversion.app/AppConfigs.plist
+build/Release-iphoneos/Currency Conversion.app/Currency Conversion
+build/Release-iphoneos/Currency Conversion.app/CurrencyConverterModel.momd/CurrencyConverterModel.mom
+build/Release-iphoneos/Currency Conversion.app/CurrencyConverterModel.momd/VersionInfo.plist
+build/Release-iphoneos/Currency Conversion.app/embedded.mobileprovision
+build/Release-iphoneos/Currency Conversion.app/Info.plist
+build/Release-iphoneos/Currency Conversion.app/PkgInfo
+build/Release-iphoneos/Currency_Conversion.swiftmodule/arm64-apple-ios.abi.json
+build/Release-iphoneos/Currency_Conversion.swiftmodule/arm64-apple-ios.swiftdoc
+build/Release-iphoneos/Currency_Conversion.swiftmodule/arm64-apple-ios.swiftmodule
+build/Release-iphoneos/Currency_Conversion.swiftmodule/Project/arm64-apple-ios.swiftsourceinfo
+build/XCBuildData/14a5430f1eccea227550f29d3d7dd353.xcbuilddata/build-request.json
+build/XCBuildData/14a5430f1eccea227550f29d3d7dd353.xcbuilddata/description.msgpack
+build/XCBuildData/14a5430f1eccea227550f29d3d7dd353.xcbuilddata/manifest.json
+build/XCBuildData/14a5430f1eccea227550f29d3d7dd353.xcbuilddata/target-graph.txt
+build/XCBuildData/14a5430f1eccea227550f29d3d7dd353.xcbuilddata/task-store.msgpack
+build/XCBuildData/24867353eaf715437bd303655ac4e2ef.xcbuilddata/build-request.json
+build/XCBuildData/24867353eaf715437bd303655ac4e2ef.xcbuilddata/description.msgpack
+build/XCBuildData/24867353eaf715437bd303655ac4e2ef.xcbuilddata/manifest.json
+build/XCBuildData/24867353eaf715437bd303655ac4e2ef.xcbuilddata/target-graph.txt
+build/XCBuildData/24867353eaf715437bd303655ac4e2ef.xcbuilddata/task-store.msgpack
+build/XCBuildData/95254da40f9c092b264bba025c301142.xcbuilddata/build-request.json
+build/XCBuildData/95254da40f9c092b264bba025c301142.xcbuilddata/description.msgpack
+build/XCBuildData/95254da40f9c092b264bba025c301142.xcbuilddata/manifest.json
+build/XCBuildData/95254da40f9c092b264bba025c301142.xcbuilddata/target-graph.txt
+build/XCBuildData/95254da40f9c092b264bba025c301142.xcbuilddata/task-store.msgpack
+build/XCBuildData/build.db
+Currency Conversion.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+Currency Conversion.xcodeproj/project.xcworkspace/xcuserdata/akashkahalkar.xcuserdatad/Bookmarks/bookmarks.plist
+Currency Conversion.xcodeproj/project.xcworkspace/xcuserdata/akashkahalkar.xcuserdatad/UserInterfaceState.xcuserstate
+Currency Conversion.xcodeproj/project.xcworkspace/xcuserdata/akashkahalkar.xcuserdatad/WorkspaceSettings.xcsettings

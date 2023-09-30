@@ -44,7 +44,7 @@ extension ConversionGridViewModel {
             convertedAmount = dataSource.getRateFor(countryCode: countryCode) * amount
         }
         
-        return String(format: "%.3f", convertedAmount)
+        return String(format: "%.2f", convertedAmount)
     }
     
     func getBase() -> String {
