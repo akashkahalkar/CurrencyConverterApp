@@ -1,5 +1,5 @@
-# CurrencyConverterApp ![Build](https://github.com/akashkahalkar/CurrencyConverterApp/workflows/Build/badge.svg)
-
+# 💸 CurrencyConverterApp ![Build](https://github.com/akashkahalkar/CurrencyConverterApp/workflows/Build/badge.svg)
+ 
 code coverage 52%
 
 Features 
