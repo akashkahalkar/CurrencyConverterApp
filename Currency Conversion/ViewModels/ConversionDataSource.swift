@@ -78,7 +78,6 @@ extension ConversionDataSource {
             } else {
                 return Color.blue.opacity(opacity)
             }
-            
         }
         
         func getRateFor(countryCode: String) -> Double {

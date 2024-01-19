@@ -16,7 +16,6 @@ class TestCurrencyGridViewModel: TestBase {
         if let ds = getConversionDataSource() {
             sut = ConversionGridViewModel(base: "TST", dataSource: ds, amount: 2)
         }
-        
     }
     
     override func tearDown() {

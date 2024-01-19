@@ -9,7 +9,6 @@ import Foundation
 import CoreData
 import SwiftUI
 
-@MainActor
 class CurrencyConversionViewModel: ObservableObject {
     
     private let manager: RequestManager
@@ -62,7 +61,8 @@ extension CurrencyConversionViewModel {
     }
     
     func parseAmount(_ s: String) -> (amount: Double?, error: String) {
-        if let amount = Double(s.trimmingCharacters(in: .whitespacesAndNewlines)) {
+        if let amount = Double(s.trimmingCharacters(in: .whitespacesAndNewlines)),
+            amount < 1000000 {
             return (amount, "")
         } else {
             return (nil, Constants.ErrorMessages.EnterValidAmount)

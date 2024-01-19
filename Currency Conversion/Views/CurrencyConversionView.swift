@@ -14,8 +14,6 @@ struct CurrencyConversionView: View {
     @State private var error: String = ""
     @State private var inputValue: String = ""
     @State private var amount: Double = 0
-    @Namespace var namespace
-    @State var id: String = ""
     
     private enum Field: Int {
         case yourTextEdit
@@ -158,29 +156,28 @@ extension CurrencyConversionView {
         VStack() {
             HStack {
                 Spacer()
-                Text("last updated at: \(viewModel.dataSource.getLastUpdateDate())")
+                Text("last synced at: \(viewModel.dataSource.getLastUpdateDate())")
                     .foregroundColor(.white.opacity(0.8))
                     .font(.system(size: 12))
                     .padding(.horizontal)
                     .padding(.top, 8)
             }
-            TextField("input amount", text: $inputValue)
-                .textFieldStyle(PlainTextFieldStyle())
-                .padding()
-                .background(border)
-                .foregroundColor(.white.opacity(0.8))
-                .tint(Color.mint)
-                .padding(.horizontal)
-                .focused($focusedField, equals: .yourTextEdit)
-                .keyboardType(.decimalPad)
-                .onChange(of: inputValue) { newValue in
-                    let parseAmount = viewModel.parseAmount(newValue)
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        amount = parseAmount.amount ?? 0
-                        error = parseAmount.error
+            HStack{
+                TextField("Input amount", text: $inputValue)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .foregroundColor(.white.opacity(0.8))
+                    .padding(.horizontal)
+                    .focused($focusedField, equals: .yourTextEdit)
+                    .keyboardType(.decimalPad)
+                    .onChange(of: inputValue) { newValue in
+                        let parseAmount = viewModel.parseAmount(newValue)
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            amount = parseAmount.amount ?? 0
+                            error = parseAmount.error
+                        }
                     }
-                    
-                }
+                Text(viewModel.base).padding(.horizontal)
+            }.padding(.vertical).background(border).tint(Color.mint).padding(.horizontal)
             if !error.isEmpty {
                 HStack {
                     Spacer()
@@ -193,7 +190,10 @@ extension CurrencyConversionView {
                         .font(.system(size: 12))
                 }.padding(.horizontal)
             }
-            getPickerView()
+            HStack {
+                Text("Select Currrency").padding(.horizontal)
+                getPickerView()
+            }
 //            if let licenseURL = viewModel.dataSource.getLicenseURL() {
 //                addTermsAndCondition(l: licenseURL)
 //            }

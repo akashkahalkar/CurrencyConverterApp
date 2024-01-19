@@ -17,7 +17,6 @@ class TestBase: XCTestCase {
     override func setUpWithError() throws {
     }
     
-    @MainActor
     override func tearDownWithError() throws {
     }
     
