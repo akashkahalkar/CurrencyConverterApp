@@ -78,10 +78,17 @@ struct ConversionGridView: View {
                 .background(.thinMaterial)
                 .cornerRadius(8)
                 .onTapGesture {
-                    let convertedAmount = viewModel.getConversionAmount(for: countryCode,
-                                                  amount: amount)
+                    let convertedAmount = viewModel.getConversionAmount(
+                        for: countryCode,
+                        amount: amount)
                     let conversionString = "\(amount) \(viewModel.getBase()) = \(convertedAmount) \(countryCode) "
+                    
+                    #if os(macOS)
+                    NSPasteboard.general.setString(conversionString, forType: .string)
+                    #elseif os(iOS)
                     UIPasteboard.general.string = conversionString
+                    #endif
+                    
                 }
             }.padding()
             .cornerRadius(16)

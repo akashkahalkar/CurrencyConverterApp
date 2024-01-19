@@ -40,7 +40,7 @@ extension DataController {
             }
         }
         catch {
-            
+            print("failed to save")
         }
     }
     

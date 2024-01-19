@@ -26,7 +26,7 @@ struct SearchBar: View {
             TextField("Search with country code ...", text: $text)
                 .padding(7)
                 .padding(.horizontal, 25)
-                .background(Color(.systemGray6))
+                .background(Color(.systemGray))
                 .cornerRadius(8)
                 .padding(.horizontal, 10)
                 .focused($focusedField, equals: .yourTextEdit)
