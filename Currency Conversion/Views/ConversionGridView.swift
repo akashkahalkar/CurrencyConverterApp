@@ -69,7 +69,7 @@ struct ConversionGridView: View {
                 Text(countryName).font(.body)
                 Spacer()
                 Text(
-                    viewModel.getConversionAmount(for: countryCode,
+                    viewModel.getConversion(for: countryCode,
                                                   amount: amount)
                 )
                 .font(Font.body.weight(Font.Weight.light))
@@ -78,7 +78,7 @@ struct ConversionGridView: View {
                 .background(.thinMaterial)
                 .cornerRadius(8)
                 .onTapGesture {
-                    let convertedAmount = viewModel.getConversionAmount(
+                    let convertedAmount = viewModel.getConversion(
                         for: countryCode,
                         amount: amount)
                     let conversionString = "\(amount) \(viewModel.getBase()) = \(convertedAmount) \(countryCode) "

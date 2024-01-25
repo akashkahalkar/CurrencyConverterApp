@@ -23,7 +23,7 @@ class TestCurrencyGridViewModel: TestBase {
     }
     
     func testGetConversionAmount() {
-        XCTAssertEqual(sut?.getConversionAmount(for: "BSE", amount: 2), "1.00")
+        XCTAssertEqual(sut?.getConversion(for: "BSE", amount: 2), "1.00")
     }
     
 }

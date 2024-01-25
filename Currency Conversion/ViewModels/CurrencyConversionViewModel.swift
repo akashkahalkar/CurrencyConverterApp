@@ -43,8 +43,9 @@ class CurrencyConversionViewModel: ObservableObject {
 
 extension CurrencyConversionViewModel {
     func fetchData(forceUpdate: Bool = false) {
+        
+        isLoading = true
         Task {
-            isLoading = true
             let countryNameData = await loadCountryNameMapings()
             guard let conversionData = await loadConversionRateMappings(forceUpdate: forceUpdate) else {
                 
@@ -54,11 +55,14 @@ extension CurrencyConversionViewModel {
                                                   conversionRateMapping: nil)
                 return
             }
-            dataSource = ConversionDataSource(countryCodeMapping: countryNameData,
+            
+            DispatchQueue.main.async {
+                self.dataSource = ConversionDataSource(countryCodeMapping: countryNameData,
                                               conversionRateMapping: conversionData)
-            self.base = dataSource.getBase()
+            
+                self.base = self.dataSource.getBase()
+            }
         }
-
     }
     
     func parseAmount(_ s: String) -> (amount: Double?, error: String) {
