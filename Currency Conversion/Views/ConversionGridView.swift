@@ -34,7 +34,7 @@ struct ConversionGridView: View {
                                           amount: viewModel.amount)
                             }
                         }
-            }
+            }.scrollDismissesKeyboard(.immediately)
         }
     }
     

@@ -93,20 +93,22 @@ extension DataController {
     }
     
     func saveCountryNameMappingToDb(response: CountryCodeMapping) async throws {
-        do {
-            response.forEach { (key, value) in
-                if let countryCodeMappings = NSEntityDescription.insertNewObject(
-                    forEntityName: "ContryCodeMapping",
-                    into: self.viewContext) as? ContryCodeMapping {
-                    countryCodeMappings.countryCode = key
-                    countryCodeMappings.countryName = value
+        
+        try await container.performBackgroundTask { context in
+            do {
+                response.forEach { (key, value) in
+                    if let countryCodeMappings = NSEntityDescription.insertNewObject(
+                        forEntityName: "ContryCodeMapping",
+                        into: self.viewContext) as? ContryCodeMapping {
+                        countryCodeMappings.countryCode = key
+                        countryCodeMappings.countryName = value
+                    }
                 }
+                try self.viewContext.save()
+            } catch {
+                print(error.localizedDescription)
+                throw OERError.Database.failedToSave
             }
-            try self.viewContext.save()
-            
-        } catch {
-            print(error.localizedDescription)
-            throw OERError.Database.failedToSave
         }
     }
     

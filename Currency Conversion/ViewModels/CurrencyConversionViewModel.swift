@@ -56,8 +56,7 @@ extension CurrencyConversionViewModel {
             
             DispatchQueue.main.async {
                 self.dataSource = ConversionDataSource(countryCodeMapping: countryNameData,
-                                              conversionRateMapping: conversionData)
-            
+                                                       conversionRateMapping: conversionData)
                 self.base = self.dataSource.getBase()
             }
         }
