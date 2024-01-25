@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 import SwiftUI
 
+@MainActor
 class CurrencyConversionViewModel: ObservableObject {
     
     private let manager: RequestManager
@@ -17,7 +18,7 @@ class CurrencyConversionViewModel: ObservableObject {
     var dataSource = ConversionDataSource(countryCodeMapping: [],
                                           conversionRateMapping: nil) {
         didSet {
-            isLoading = false
+            self.isLoading = false
         }
     }
     

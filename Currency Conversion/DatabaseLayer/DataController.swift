@@ -86,7 +86,7 @@ extension DataController {
         return conversionRateMapping
     }
     
-    func fetchCountryNameMapping() -> [ContryCodeMapping] {
+    public func fetchCountryNameMapping() -> [ContryCodeMapping] {
         let context = DataController.shared.container.viewContext
         var pickerData = [ContryCodeMapping]()
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "ContryCodeMapping")
@@ -101,22 +101,3 @@ extension DataController {
     }
 }
 
-/*
- {
-     disclaimer: "https://openexchangerates.org/terms/",
-     license: "https://openexchangerates.org/license/",
-     timestamp: 1449877801,
-     base: "USD",
-     rates: {
-         AED: 3.672538,
-         AFN: 66.809999,
-         ALL: 125.716501,
-         AMD: 484.902502,
-         ANG: 1.788575,
-         AOA: 135.295998,
-         ARS: 9.750101,
-         AUD: 1.390866,
-         /* ... */
-     }
- }
- */
