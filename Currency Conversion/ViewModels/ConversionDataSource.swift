@@ -28,6 +28,8 @@ class ConversionDataSource {
         let conversionRateMapping = loadConversionRateMapping(object: conversionRateMapping)
         self.conversionMappings = loadMapping(countryNameMapping, conversionRateMapping)
     }
+    
+    static let empty = ConversionDataSource(countryCodeMapping: [], conversionRateMapping: nil)
 }
 
 extension ConversionDataSource {

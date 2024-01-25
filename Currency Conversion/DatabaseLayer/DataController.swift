@@ -11,6 +11,10 @@ import CoreData
 class DataController: ObservableObject {
     let container: NSPersistentContainer
     static let shared: DataController = DataController()
+    
+    var viewContext: NSManagedObjectContext {
+        container.viewContext
+    }
         
     private init() {
         container = NSPersistentContainer(name: "CurrencyConverterModel")
@@ -24,9 +28,8 @@ class DataController: ObservableObject {
 
 extension DataController {
     
-    private func deleteIfAlreadyPresent() {
+    private func deleteIfAlreadyPresent(context: NSManagedObjectContext) {
         
-        let context = DataController.shared.container.viewContext
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "ConversionRateMapping")
         request.returnsObjectsAsFaults = false
         
@@ -44,28 +47,31 @@ extension DataController {
         }
     }
     
-    func saveToDb(response: ConversionRateResponse) throws {
-        deleteIfAlreadyPresent()
-        let context = DataController.shared.container.viewContext
-        let conversionRateMapping = ConversionRateMapping(context: context)
-        conversionRateMapping.disclaimer = response.disclaimer
-        conversionRateMapping.license = response.license
-        conversionRateMapping.timestamp = response.timestamp
+    func saveToDb(response: ConversionRateResponse) async throws {
         
-        response.rates.forEach({ (countryCode, amount) in
-            if let conversionRate = NSEntityDescription.insertNewObject(
-                forEntityName: "ConversionRates",
-                into: context) as? ConversionRates {
-                conversionRate.countryCode = countryCode
-                conversionRate.conversionRate = amount
-                conversionRateMapping.addToMapping(conversionRate)
+        try await container.performBackgroundTask { context in
+            
+            self.deleteIfAlreadyPresent(context: context)
+            let conversionRateMapping = ConversionRateMapping(context: context)
+            conversionRateMapping.disclaimer = response.disclaimer
+            conversionRateMapping.license = response.license
+            conversionRateMapping.timestamp = response.timestamp
+            
+            response.rates.forEach { (countryCode, amount) in
+                if let conversionRate = NSEntityDescription.insertNewObject(
+                    forEntityName: "ConversionRates",
+                    into: context) as? ConversionRates {
+                    conversionRate.countryCode = countryCode
+                    conversionRate.conversionRate = amount
+                    conversionRateMapping.addToMapping(conversionRate)
+                }
             }
-        })
-        do {
-            try context.save()
-        }
-        catch {
-            throw OERError.Database.failedToSave
+            do {
+                try context.save()
+            }
+            catch {
+                throw OERError.Database.failedToSave
+            }
         }
     }
     
@@ -84,6 +90,24 @@ extension DataController {
             conversionRateMapping = nil
         }
         return conversionRateMapping
+    }
+    
+    func saveCountryNameMappingToDb(response: CountryCodeMapping) async throws {
+        do {
+            response.forEach { (key, value) in
+                if let countryCodeMappings = NSEntityDescription.insertNewObject(
+                    forEntityName: "ContryCodeMapping",
+                    into: self.viewContext) as? ContryCodeMapping {
+                    countryCodeMappings.countryCode = key
+                    countryCodeMappings.countryName = value
+                }
+            }
+            try self.viewContext.save()
+            
+        } catch {
+            print(error.localizedDescription)
+            throw OERError.Database.failedToSave
+        }
     }
     
     public func fetchCountryNameMapping() -> [ContryCodeMapping] {

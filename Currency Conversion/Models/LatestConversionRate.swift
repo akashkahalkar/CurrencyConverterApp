@@ -15,4 +15,4 @@ struct ConversionRateResponse: Codable {
     let rates: [String: Double]
 }
 
-typealias CurrenciesResponse = [String: String]
+typealias CountryCodeMapping = [String: String]

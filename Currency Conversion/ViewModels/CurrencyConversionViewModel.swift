@@ -15,13 +15,12 @@ class CurrencyConversionViewModel: ObservableObject {
     private let manager: RequestManager
     private let coreDataManager: DataController
     
-    var dataSource = ConversionDataSource(countryCodeMapping: [],
-                                          conversionRateMapping: nil) {
-        didSet {
-            self.isLoading = false
-        }
+    var dataSource = ConversionDataSource.empty {
+        didSet { self.isLoading = false }
     }
     
+    @Published var errorMessage: String?
+    @Published var isLoading: Bool = false
     @Published var base = "USD" {
         didSet {
             withAnimation {
@@ -29,8 +28,7 @@ class CurrencyConversionViewModel: ObservableObject {
             }
         }
     }
-    @Published var errorMessage: String?
-    @Published var isLoading: Bool = false
+    
     var selectedCountryName: String = "Select a Country"
     
     init(appId: String) {
@@ -81,12 +79,11 @@ extension CurrencyConversionViewModel {
                 return []
             }
             do {
-                try saveCountryNameMappingToDb(response: response)
+                try await coreDataManager.saveCountryNameMappingToDb(response: response)
                 isLoading = false
                 errorMessage = ""
                 return coreDataManager.fetchCountryNameMapping()
-            }
-            catch {
+            } catch {
                 isLoading = false
                 errorMessage = Constants.ErrorMessages.somthingWentWrong
                 return []
@@ -103,7 +100,7 @@ extension CurrencyConversionViewModel {
                 return nil
             }
             do {
-                try coreDataManager.saveToDb(response: currencyRateResponse)
+                try await coreDataManager.saveToDb(response: currencyRateResponse)
                 return coreDataManager.fetchConversionRateMappings()
             }
             catch {
@@ -115,42 +112,11 @@ extension CurrencyConversionViewModel {
     }
     
     private func fetchLatestCurrencyRates() async -> ConversionRateResponse? {
-        do {
-            guard let conversionRatesResponse = try await manager.getLatestConversionRate() else {
-                return nil
-            }
-            return conversionRatesResponse
-        }
-        catch {
-            return nil
-        }
+        try? await manager.getLatestConversionRate()
     }
     
-    private func fetchCurrencies() async -> CurrenciesResponse? {
-        do {
-            guard let currenciesResponse = try await manager.getCurrencies() else {
-                return nil
-            }
-            return currenciesResponse
-        }
-        catch {
-            return nil
-        }
+    private func fetchCurrencies() async -> CountryCodeMapping? {
+        try? await manager.getCurrencies()
     }
     
-    private func saveCountryNameMappingToDb(response: CurrenciesResponse) throws {
-        response.forEach { (key, value) in
-            if let countryCodeMappings = NSEntityDescription.insertNewObject(
-                forEntityName: "ContryCodeMapping",
-                into: coreDataManager.container.viewContext) as? ContryCodeMapping {
-                countryCodeMappings.countryCode = key
-                countryCodeMappings.countryName = value
-            }
-        }
-        do {
-            try coreDataManager.container.viewContext.save()
-        } catch {
-            throw OERError.Database.failedToSave
-        }
-    }
 }
