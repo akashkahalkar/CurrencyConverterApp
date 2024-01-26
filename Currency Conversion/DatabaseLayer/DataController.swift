@@ -30,20 +30,18 @@ extension DataController {
     
     private func deleteIfAlreadyPresent(context: NSManagedObjectContext) {
         
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "ConversionRateMapping")
+        let request = ConversionRateMapping.fetchRequest()
         request.returnsObjectsAsFaults = false
         
         do {
-            let result = try context.fetch(request)
-            if result.count > 0 {
-                for object in result {
-                    context.delete(object as! NSManagedObject)
-                }
+            var result = try context.fetch(request)
+            if !result.isEmpty {
+                result.removeAll()
                 try context.save()
             }
         }
         catch {
-            print("failed to save")
+            print(error.localizedDescription)
         }
     }
     
@@ -58,13 +56,10 @@ extension DataController {
             conversionRateMapping.timestamp = response.timestamp
             
             response.rates.forEach { (countryCode, amount) in
-                if let conversionRate = NSEntityDescription.insertNewObject(
-                    forEntityName: "ConversionRates",
-                    into: context) as? ConversionRates {
-                    conversionRate.countryCode = countryCode
-                    conversionRate.conversionRate = amount
-                    conversionRateMapping.addToMapping(conversionRate)
-                }
+                let conversionRate = ConversionRates(context: context)
+                conversionRate.countryCode = countryCode
+                conversionRate.conversionRate = amount
+                conversionRateMapping.addToMapping(conversionRate)
             }
             do {
                 try context.save()
@@ -77,11 +72,10 @@ extension DataController {
     
     func fetchConversionRateMappings() -> ConversionRateMapping? {
         var conversionRateMapping: ConversionRateMapping?
-        let context = DataController.shared.container.viewContext
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "ConversionRateMapping")
         request.returnsObjectsAsFaults = false
         do {
-            let result = try context.fetch(request).first
+            let result = try viewContext.fetch(request).first
             guard let data = result as? ConversionRateMapping else {
                 return nil
             }
@@ -113,13 +107,13 @@ extension DataController {
     }
     
     public func fetchCountryNameMapping() -> [ContryCodeMapping] {
-        let context = DataController.shared.container.viewContext
+        
         var pickerData = [ContryCodeMapping]()
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "ContryCodeMapping")
+        let request = ContryCodeMapping.fetchRequest()
         request.returnsObjectsAsFaults = false
         do {
-            let result = try context.fetch(request) as? [ContryCodeMapping]
-            pickerData = result?.compactMap({ $0 }) ?? []
+            let result = try viewContext.fetch(request)
+            pickerData = result.compactMap({ $0 })
         } catch {
             return pickerData
         }
