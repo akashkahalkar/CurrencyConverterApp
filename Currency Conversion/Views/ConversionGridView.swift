@@ -11,12 +11,10 @@ import SwiftUI
 struct ConversionGridView: View {
     @ObservedObject private var viewModel: ConversionGridViewModel
     @State var searchTerm: String = ""
-    
-    private var countryNameMapping = [String: String]()
-    var filteredMappings = [String: String]()
     @State private var showToastOverlay = false
     
     init(viewModel: ConversionGridViewModel) {
+        print("Grid view init calling!")
         self.viewModel = viewModel
     }
     
@@ -27,30 +25,34 @@ struct ConversionGridView: View {
                 LazyVGrid(
                     columns: [
                         GridItem(.adaptive(minimum: 200, maximum: 1000))]) {
-                            ForEach(getFilteredResults(searchTerm: searchTerm),
-                                    id: \.self) { countryCode in
-                                ColorView(countryCode: countryCode,
-                                          countryName: viewModel.getCountryName(for: countryCode),
+                            ForEach(getFilteredResults(searchTerm: searchTerm), id: \.countryCode) { nameMapping in
+                                ColorView(countryCode: nameMapping.countryCode,
+                                          countryName: nameMapping.countryName,
                                           amount: viewModel.amount)
                             }
                         }
+            }.scrollDismissesKeyboard(.immediately)
+        }.overlay {
+            if showToastOverlay {
+                Text("Copied to Clipboard!")
+                    .padding()
+                    .transition(.move(edge: .bottom))
+                    .background(Color.black.opacity(0.5))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
     }
     
-    func getFilteredResults(searchTerm: String) -> [String] {
-        var filteredResult: [String]
+    func getFilteredResults(searchTerm: String) -> [CountryListPickerData] {
+        var filteredResult: [CountryListPickerData]
         if searchTerm.isEmpty {
-            filteredResult = viewModel
-                .getCountryCodes()
-                .sorted()
+            filteredResult = viewModel.getCountryCodes()
         } else {
-            filteredResult = viewModel
-                .getCountryCodes()
-                .sorted()
-                .filter({$0.contains(searchTerm.uppercased())})
+            filteredResult = viewModel.getCountryCodes().filter({ nameMapping in
+                nameMapping.countryCode.lowercased().contains(searchTerm.lowercased())
+            })
         }
-    return filteredResult
+        return filteredResult
     }
     
     @ViewBuilder
@@ -69,7 +71,7 @@ struct ConversionGridView: View {
                 Text(countryName).font(.body)
                 Spacer()
                 Text(
-                    viewModel.getConversionAmount(for: countryCode,
+                    viewModel.getConversion(for: countryCode,
                                                   amount: amount)
                 )
                 .font(Font.body.weight(Font.Weight.light))
@@ -78,10 +80,23 @@ struct ConversionGridView: View {
                 .background(.thinMaterial)
                 .cornerRadius(8)
                 .onTapGesture {
-                    let convertedAmount = viewModel.getConversionAmount(for: countryCode,
-                                                  amount: amount)
+                    let convertedAmount = viewModel.getConversion(
+                        for: countryCode,
+                        amount: amount)
                     let conversionString = "\(amount) \(viewModel.getBase()) = \(convertedAmount) \(countryCode) "
+                    
+                    #if os(macOS)
+                    NSPasteboard.general.setString(conversionString, forType: .string)
+                    #elseif os(iOS)
                     UIPasteboard.general.string = conversionString
+                    #endif
+                    
+                    withAnimation {
+                        showToastOverlay = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: {
+                            showToastOverlay = false
+                        })
+                    }
                 }
             }.padding()
             .cornerRadius(16)

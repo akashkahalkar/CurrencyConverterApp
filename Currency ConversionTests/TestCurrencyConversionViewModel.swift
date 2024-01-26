@@ -12,23 +12,19 @@ class TestCurrencyConversionViewModel: XCTestCase {
     
     private var sut: CurrencyConversionViewModel?
     
-    @MainActor
     override func setUpWithError() throws {
         sut = CurrencyConversionViewModel(appId: "TEST")
     }
     
-    @MainActor
     override func tearDownWithError() throws {
         sut = nil
     }
     
-    @MainActor
     func testAmountValidationEmptyValue() {
         XCTAssertNil(sut?.parseAmount("").amount)
         XCTAssertNotNil(sut?.parseAmount("").error)
     }
     
-    @MainActor
     func testAmountValidationValidAmount() {
         XCTAssertNotNil(sut?.parseAmount("123").amount)
         XCTAssertNotNil(sut?.parseAmount("123").error)

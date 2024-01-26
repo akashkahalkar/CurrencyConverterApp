@@ -37,7 +37,7 @@ class RequestManager {
         return try await get(url: url)
     }
     
-    func getCurrencies() async throws -> CurrenciesResponse? {
+    func getCurrencies() async throws -> CountryCodeMapping? {
         guard let url = urlManager.getCurrencies() else {
             return nil
         }

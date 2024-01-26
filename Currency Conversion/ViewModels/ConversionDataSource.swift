@@ -8,63 +8,39 @@
 import Foundation
 import SwiftUI
 
+struct CountryListPickerData {
+    var countryCode: String
+    var countryName: String
+}
+
 class ConversionDataSource {
     
-    private var countryNameMapping = [String: String]()
-    private var conversionRateMapping = [String: Double]()
+    private var conversionMappings = [String: (countryName: String, conversionRate: Double)]()
     private var base: String
     private var timestamp: Double = 0
     private var license: String?
     private var disclaimer: String?
-    
-    init(countryCodeMapping: [ContryCodeMapping],
-                 conversionRateMapping: ConversionRateMapping?) {
-        self.base = conversionRateMapping?.base ?? "USD"
-        self.timestamp = conversionRateMapping?.timestamp ?? 0
-        self.license = conversionRateMapping?.license
-        self.disclaimer = conversionRateMapping?.disclaimer
-        loadCountryNameMapping(objects: countryCodeMapping)
-        loadConversionRateMapping(object: conversionRateMapping)
+        
+    init(
+        mappings: [String: (String, Double)], 
+        base: String,
+        timestamp: Double,
+        license: String,
+        disclaimer: String
+    ) {
+        
+        self.base = base
+        self.timestamp = timestamp
+        self.license = license
+        self.disclaimer = disclaimer
+        self.conversionMappings = mappings
     }
+    
+    static let empty = ConversionDataSource(mappings: [:], base: "", timestamp: 0, license: "", disclaimer: "")
 }
 
 extension ConversionDataSource {
-        // MARK: private function
-        private func loadCountryNameMapping(objects: [ContryCodeMapping]) {
-            countryNameMapping = mapToDictionary(countryNameArray: objects)
-        }
-        
-        private func loadConversionRateMapping(object: ConversionRateMapping?) {
-            guard let object = object else {
-                conversionRateMapping = [:]
-                return
-            }
-            conversionRateMapping = mapToDictionary(conversionRateData: object)
-        }
-        
-        private func mapToDictionary(conversionRateData: ConversionRateMapping) -> [String: Double] {
-            var rateMapping: [String: Double] = [:]
-            let conversionRates: [ConversionRates] = conversionRateData
-                .mapping?
-                .compactMap({$0 as? ConversionRates}) ?? []
-            
-            conversionRates.forEach { rate in
-                if let countryCode = rate.countryCode {
-                    rateMapping[countryCode] = rate.conversionRate
-                }
-            }
-            return rateMapping
-        }
-        
-        private func mapToDictionary(countryNameArray: [ContryCodeMapping]) -> [String: String] {
-            var map: [String: String] = [:]
-            countryNameArray.forEach { ccm in
-                if let code = ccm.countryCode {
-                    map[code] = ccm.countryName ?? ""
-                }
-            }
-            return map
-        }
+    
 }
 
 extension ConversionDataSource {
@@ -78,25 +54,26 @@ extension ConversionDataSource {
             } else {
                 return Color.blue.opacity(opacity)
             }
-            
         }
         
         func getRateFor(countryCode: String) -> Double {
-            guard let amount = conversionRateMapping[countryCode] else {
-                return 0
-            }
-            return amount
+            conversionMappings[countryCode]?.conversionRate ?? 0
         }
         
         func getcountryName(code: String) -> String {
-            guard let amount = countryNameMapping[code] else {
-                return "NA"
-            }
-            return String(amount)
+            conversionMappings[code]?.countryName ?? ""
         }
         
-        func getCountryCodes() -> [String] {
-            return countryNameMapping.keys.map({$0})
+        func getCountryCodes() -> [CountryListPickerData] {
+            
+            let keys = Array(conversionMappings.keys)
+            var countryPickerList = [CountryListPickerData]()
+            keys.forEach { key in
+                if let name = conversionMappings[key]?.countryName {
+                    countryPickerList.append(CountryListPickerData(countryCode: key, countryName: name))
+                }
+            }
+            return countryPickerList
         }
         
         func getBase() -> String {

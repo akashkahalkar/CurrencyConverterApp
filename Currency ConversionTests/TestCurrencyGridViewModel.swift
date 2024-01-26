@@ -16,7 +16,6 @@ class TestCurrencyGridViewModel: TestBase {
         if let ds = getConversionDataSource() {
             sut = ConversionGridViewModel(base: "TST", dataSource: ds, amount: 2)
         }
-        
     }
     
     override func tearDown() {
@@ -24,7 +23,7 @@ class TestCurrencyGridViewModel: TestBase {
     }
     
     func testGetConversionAmount() {
-        XCTAssertEqual(sut?.getConversionAmount(for: "BSE", amount: 2), "1.00")
+        XCTAssertEqual(sut?.getConversion(for: "BSE", amount: 2), "1.00")
     }
     
 }

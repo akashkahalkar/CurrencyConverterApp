@@ -11,7 +11,6 @@ struct AppConfigParser {
   
   static var appId: String {
     get {
-        
       guard let filePath = Bundle.main.path(forResource: "AppConfigs", ofType: "plist") else {
         fatalError("Couldn't find file 'App config'.")
       }

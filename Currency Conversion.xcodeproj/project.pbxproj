@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C286E9E2B5A762E00969EEF /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C286E9D2B5A762E00969EEF /* Color+Ext.swift */; };
 		880106A22853D6520012703D /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880106A12853D6520012703D /* DataController.swift */; };
 		880106A52853D9820012703D /* CurrencyConverterModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 880106A32853D9820012703D /* CurrencyConverterModel.xcdatamodeld */; };
 		880106A8285463910012703D /* AppConfigs.plist in Resources */ = {isa = PBXBuildFile; fileRef = 880106A7285463910012703D /* AppConfigs.plist */; };
@@ -57,6 +58,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4C286E9D2B5A762E00969EEF /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
 		880106A12853D6520012703D /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		880106A42853D9820012703D /* CurrencyConverterModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CurrencyConverterModel.xcdatamodel; sourceTree = "<group>"; };
 		880106A7285463910012703D /* AppConfigs.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppConfigs.plist; sourceTree = "<group>"; };
@@ -117,6 +119,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4C286E9C2B5A761100969EEF /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				4C286E9D2B5A762E00969EEF /* Color+Ext.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		880106A6285463700012703D /* AppContants */ = {
 			isa = PBXGroup;
 			children = (
@@ -150,9 +160,9 @@
 		884CE62328538B71003A5CD1 /* Currency Conversion */ = {
 			isa = PBXGroup;
 			children = (
+				4C286E9C2B5A761100969EEF /* Extensions */,
 				880106A6285463700012703D /* AppContants */,
 				884CE653285395D2003A5CD1 /* DatabaseLayer */,
-				884CE652285395BB003A5CD1 /* CoreDataModels */,
 				884CE65128539594003A5CD1 /* ViewModels */,
 				884CE6502853958F003A5CD1 /* Views */,
 				884CE64F28539584003A5CD1 /* Models */,
@@ -247,6 +257,7 @@
 		884CE653285395D2003A5CD1 /* DatabaseLayer */ = {
 			isa = PBXGroup;
 			children = (
+				884CE652285395BB003A5CD1 /* CoreDataModels */,
 				880106A12853D6520012703D /* DataController.swift */,
 			);
 			path = DatabaseLayer;
@@ -392,6 +403,7 @@
 				880106A52853D9820012703D /* CurrencyConverterModel.xcdatamodeld in Sources */,
 				884AE498285498B5005EF045 /* ConversionRateMapping+CoreDataClass.swift in Sources */,
 				880106B028547F6B0012703D /* ConversionGridViewModel.swift in Sources */,
+				4C286E9E2B5A762E00969EEF /* Color+Ext.swift in Sources */,
 				884CE62528538B71003A5CD1 /* Currency_ConversionApp.swift in Sources */,
 				88AC938D285541CE00847DFD /* ConversionDataSource.swift in Sources */,
 				880106AA285464030012703D /* AppConfigParser.swift in Sources */,
@@ -493,7 +505,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -547,7 +559,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -568,12 +580,14 @@
 				DEVELOPMENT_TEAM = 2BMUKRTSZ6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = $Converter;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -601,12 +615,14 @@
 				DEVELOPMENT_TEAM = 2BMUKRTSZ6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = $Converter;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
