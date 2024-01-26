@@ -11,79 +11,31 @@ import SwiftUI
 class ConversionDataSource {
     
     private var conversionMappings = [String: (countryName: String, conversionRate: Double)]()
-    
     private var base: String
     private var timestamp: Double = 0
     private var license: String?
     private var disclaimer: String?
     
-    init(countryCodeMapping: [ContryCodeMapping],
-         conversionRateMapping: ConversionRateMapping?) {
+    init(
+        mappings: [String: (String, Double)], 
+        base: String,
+        timestamp: Double,
+        license: String,
+        disclaimer: String
+    ) {
         
-        self.base = conversionRateMapping?.base ?? "USD"
-        self.timestamp = conversionRateMapping?.timestamp ?? 0
-        self.license = conversionRateMapping?.license
-        self.disclaimer = conversionRateMapping?.disclaimer
-        let countryNameMapping = loadCountryNameMapping(objects: countryCodeMapping)
-        let conversionRateMapping = loadConversionRateMapping(object: conversionRateMapping)
-        self.conversionMappings = loadMapping(countryNameMapping, conversionRateMapping)
+        self.base = base
+        self.timestamp = timestamp
+        self.license = license
+        self.disclaimer = disclaimer
+        self.conversionMappings = mappings
     }
     
-    static let empty = ConversionDataSource(countryCodeMapping: [], conversionRateMapping: nil)
+    static let empty = ConversionDataSource(mappings: [:], base: "", timestamp: 0, license: "", disclaimer: "")
 }
 
 extension ConversionDataSource {
-    // MARK: private function
-    private func loadCountryNameMapping(objects: [ContryCodeMapping]) -> [String: String] {
-        return mapToDictionary(countryNameArray: objects)
-    }
     
-    private func loadConversionRateMapping(object: ConversionRateMapping?) -> [String: Double] {
-        guard let object = object else {
-            return [:]
-        }
-        return mapToDictionary(conversionRateData: object)
-    }
-    
-    private func loadMapping(
-        _ countryNameMapping: [String: String],
-        _ rateMapping: [String: Double]
-    ) -> [String: (String, Double)] {
-    
-        var mergedDictionary = [String: (String, Double)]()
-        for countryCode in Set(countryNameMapping.keys).intersection(rateMapping.keys) {
-            // Get values from both dictionaries
-            if let name = countryNameMapping[countryCode], let value = rateMapping[countryCode] {
-                // Create a tuple and add it to the merged dictionary
-                mergedDictionary[countryCode] = (name, value)
-            }
-        }
-        return mergedDictionary
-    }
-    
-    private func mapToDictionary(conversionRateData: ConversionRateMapping) -> [String: Double] {
-        var rateMapping: [String: Double] = [:]
-        let conversionRates: [ConversionRates] = conversionRateData
-            .mapping?
-            .compactMap({$0 as? ConversionRates}) ?? []
-        
-        conversionRates.forEach { rate in
-            if let countryCode = rate.countryCode {
-                rateMapping[countryCode] = rate.conversionRate
-            }
-        }
-        return rateMapping
-    }
-    
-    private func mapToDictionary(countryNameArray: [ContryCodeMapping]) -> [String: String] {
-        var map: [String: String] = [:]
-        countryNameArray.forEach { ccm in
-            if let code = ccm.countryCode {
-                map[code] = ccm.countryName ?? ""
-            }
-        }
-        return map
-    }
 }
 
 extension ConversionDataSource {

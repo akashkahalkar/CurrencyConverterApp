@@ -40,23 +40,41 @@ class CurrencyConversionViewModel: ObservableObject {
 }
 
 extension CurrencyConversionViewModel {
-    func fetchData(forceUpdate: Bool = false) {
+    func fetchData(forceUpdate: Bool = true) {
         
         isLoading = true
-        Task {
-            let countryNameData = await loadCountryNameMapings()
-            guard let conversionData = await loadConversionRateMappings(forceUpdate: forceUpdate) else {
-                
-                isLoading = false
-                errorMessage = Constants.ErrorMessages.somthingWentWrong
-                dataSource = ConversionDataSource.empty
+        Task.detached(priority: .userInitiated) {
+            
+            async let countryNameData = self.loadCountryNameMapings()
+            async let conversionData = self.loadConversionRateMappings(forceUpdate: forceUpdate)
+            
+            let nameData = await countryNameData
+            let rateData = await conversionData
+            
+            
+            guard !nameData.isEmpty, let rateData else {
+                await MainActor.run {
+                    self.isLoading = false
+                    self.errorMessage = Constants.ErrorMessages.somthingWentWrong
+                    self.dataSource = ConversionDataSource.empty
+                }
                 return
             }
             
-            DispatchQueue.main.async {
-                self.dataSource = ConversionDataSource(countryCodeMapping: countryNameData,
-                                                       conversionRateMapping: conversionData)
-                self.base = self.dataSource.getBase()
+            let mapping = await self.loadMapping(nameData, rateData)
+            let base = rateData.base ?? "USD"
+            let timestamp = rateData.timestamp
+            let license = rateData.license ?? ""
+            let disclaimer = rateData.disclaimer ?? ""
+            
+            await MainActor.run {
+                self.dataSource = ConversionDataSource(
+                    mappings: mapping,
+                    base: base,
+                    timestamp: timestamp,
+                    license: license,
+                    disclaimer: disclaimer)
+                self.base = base
             }
         }
     }
@@ -117,4 +135,60 @@ extension CurrencyConversionViewModel {
         try? await manager.getCurrencies()
     }
     
+}
+extension CurrencyConversionViewModel {
+    // MARK: private function
+    private func loadCountryNameMapping(objects: [ContryCodeMapping]) -> [String: String] {
+        return mapToDictionary(countryNameArray: objects)
+    }
+    
+    private func loadConversionRateMapping(object: ConversionRateMapping?) -> [String: Double] {
+        guard let object = object else {
+            return [:]
+        }
+        return mapToDictionary(conversionRateData: object)
+    }
+    
+    private func loadMapping(
+        _ countryNameData: [ContryCodeMapping],
+        _ rateData: ConversionRateMapping
+    ) -> [String: (String, Double)] {
+        
+        let countryNameMapping = self.loadCountryNameMapping(objects: countryNameData)
+        let conversionRateMapping = self.loadConversionRateMapping(object: rateData)
+    
+        var mergedDictionary = [String: (String, Double)]()
+        for countryCode in Set(countryNameMapping.keys).intersection(conversionRateMapping.keys) {
+            // Get values from both dictionaries
+            if let name = countryNameMapping[countryCode], let value = conversionRateMapping[countryCode] {
+                // Create a tuple and add it to the merged dictionary
+                mergedDictionary[countryCode] = (name, value)
+            }
+        }
+        return mergedDictionary
+    }
+    
+    private func mapToDictionary(conversionRateData: ConversionRateMapping) -> [String: Double] {
+        var rateMapping: [String: Double] = [:]
+        let conversionRates: [ConversionRates] = conversionRateData
+            .mapping?
+            .compactMap({$0 as? ConversionRates}) ?? []
+        
+        conversionRates.forEach { rate in
+            if let countryCode = rate.countryCode {
+                rateMapping[countryCode] = rate.conversionRate
+            }
+        }
+        return rateMapping
+    }
+    
+    private func mapToDictionary(countryNameArray: [ContryCodeMapping]) -> [String: String] {
+        var map: [String: String] = [:]
+        countryNameArray.forEach { ccm in
+            if let code = ccm.countryCode {
+                map[code] = ccm.countryName ?? ""
+            }
+        }
+        return map
+    }
 }
