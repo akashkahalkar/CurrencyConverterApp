@@ -49,8 +49,7 @@ extension CurrencyConversionViewModel {
                 
                 isLoading = false
                 errorMessage = Constants.ErrorMessages.somthingWentWrong
-                dataSource = ConversionDataSource(countryCodeMapping: [],
-                                                  conversionRateMapping: nil)
+                dataSource = ConversionDataSource.empty
                 return
             }
             
