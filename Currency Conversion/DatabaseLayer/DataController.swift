@@ -70,22 +70,6 @@ extension DataController {
         }
     }
     
-    func fetchConversionRateMappings() -> ConversionRateMapping? {
-        var conversionRateMapping: ConversionRateMapping?
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "ConversionRateMapping")
-        request.returnsObjectsAsFaults = false
-        do {
-            let result = try viewContext.fetch(request).first
-            guard let data = result as? ConversionRateMapping else {
-                return nil
-            }
-            conversionRateMapping = data
-        } catch {
-            conversionRateMapping = nil
-        }
-        return conversionRateMapping
-    }
-    
     func saveCountryNameMappingToDb(response: CountryCodeMapping) async throws {
         
         try await container.performBackgroundTask { context in
@@ -106,18 +90,16 @@ extension DataController {
         }
     }
     
-    public func fetchCountryNameMapping() -> [ContryCodeMapping] {
-        
-        var pickerData = [ContryCodeMapping]()
-        let request = ContryCodeMapping.fetchRequest()
-        request.returnsObjectsAsFaults = false
-        do {
-            let result = try viewContext.fetch(request)
-            pickerData = result.compactMap({ $0 })
-        } catch {
-            return pickerData
-        }
-        return pickerData
+    func fetchConversionRateMappings() -> ConversionRateMapping? {
+        let request = ConversionRateMapping.fetchRequest()
+        return try? viewContext.fetch(request).first
     }
+    
+    func fetchCountryNameMapping() -> [ContryCodeMapping] {
+        let request = ContryCodeMapping.fetchRequest()
+        let result = try? viewContext.fetch(request)
+        return result?.compactMap({ $0 }) ?? []
+    }
+    
 }
 

@@ -54,7 +54,7 @@ extension ConversionGridViewModel {
     
     /// Return all country codes
     /// - Returns: return array of country code in string format e.g. INR, USD
-    func getCountryCodes() -> [String] {
+    func getCountryCodes() -> [CountryListPickerData] {
         return dataSource.getCountryCodes()
     }
 }

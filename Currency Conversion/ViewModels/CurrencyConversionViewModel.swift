@@ -9,48 +9,37 @@ import Foundation
 import CoreData
 import SwiftUI
 
+
 @MainActor
 class CurrencyConversionViewModel: ObservableObject {
     
     private let manager: RequestManager
     private let coreDataManager: DataController
     
-    var dataSource = ConversionDataSource.empty {
-        didSet { self.isLoading = false }
-    }
+    var dataSource = ConversionDataSource.empty
     
     @Published var errorMessage: String?
-    @Published var isLoading: Bool = false
-    @Published var base = "USD" {
-        didSet {
-            withAnimation {
-                selectedCountryName = dataSource.getcountryName(code: base)
-            }
-        }
-    }
-    
-    var selectedCountryName: String = "Select a Country"
+    @Published var isLoading: Bool = true
+    @Published var base = "USD"
+    @Published var pickerData: [CountryListPickerData] = []
     
     init(appId: String) {
         let urlManager = OERURLManager(appId)
         manager = RequestManager(manager: urlManager)
         coreDataManager = DataController.shared
-        fetchData()
+        //fetchData()
     }
 }
 
 extension CurrencyConversionViewModel {
-    func fetchData(forceUpdate: Bool = true) {
+    func fetchData(forceUpdate: Bool = false) {
         
         isLoading = true
-        Task.detached(priority: .userInitiated) {
-            
-            async let countryNameData = self.loadCountryNameMapings()
-            async let conversionData = self.loadConversionRateMappings(forceUpdate: forceUpdate)
-            
-            let nameData = await countryNameData
-            let rateData = await conversionData
-            
+        Task {
+            print("task started", Date().description, #function)
+            let nameData = await self.loadCountryNameMapings()
+            let rateData = await self.loadConversionRateMappings(forceUpdate: forceUpdate)
+            print("task completed", Date().description, #function)
             
             guard !nameData.isEmpty, let rateData else {
                 await MainActor.run {
@@ -61,13 +50,15 @@ extension CurrencyConversionViewModel {
                 return
             }
             
-            let mapping = await self.loadMapping(nameData, rateData)
+            print("parsign started", Date().description, #function)
+            let mapping = self.loadMapping(nameData, rateData)
+            print("parsign completed", Date().description, #function)
             let base = rateData.base ?? "USD"
             let timestamp = rateData.timestamp
             let license = rateData.license ?? ""
             let disclaimer = rateData.disclaimer ?? ""
             
-            await MainActor.run {
+            DispatchQueue.main.async {
                 self.dataSource = ConversionDataSource(
                     mappings: mapping,
                     base: base,
@@ -75,6 +66,9 @@ extension CurrencyConversionViewModel {
                     license: license,
                     disclaimer: disclaimer)
                 self.base = base
+                self.pickerData = self.dataSource.getCountryCodes()
+                self.isLoading = false
+                self.errorMessage = ""
             }
         }
     }
@@ -89,40 +83,56 @@ extension CurrencyConversionViewModel {
     }
     
     private func loadCountryNameMapings() async -> [ContryCodeMapping] {
+        /// check in core data for cached data
         let countryCodeMappings = coreDataManager.fetchCountryNameMapping()
+        
         if countryCodeMappings.isEmpty {
+            /// if no data is cached then make an API call
+            print("Api call completed", #function, Date().description)
             guard let response = await fetchCurrencies() else {
+                print("Api call failed", #function)
                 return []
             }
+            print("Api call completed", #function, Date().description)
             do {
+                /// saving to core Data
                 try await coreDataManager.saveCountryNameMappingToDb(response: response)
-                isLoading = false
-                errorMessage = ""
+                /// fetch and return from core data
                 return coreDataManager.fetchCountryNameMapping()
             } catch {
-                isLoading = false
-                errorMessage = Constants.ErrorMessages.somthingWentWrong
                 return []
             }
         } else {
+            print("return cached data", #function)
             return countryCodeMappings
         }
     }
     
     private func loadConversionRateMappings(forceUpdate: Bool) async -> ConversionRateMapping? {
+        /// check core data for cached data
         let currencyRates = coreDataManager.fetchConversionRateMappings()
+        
         if currencyRates == nil || forceUpdate == true {
+            /// if no data, or force sync due to last sync threshold breach
+            print("Force sync", forceUpdate)
+            print("Api call started", #function, Date().description)
             guard let currencyRateResponse = await fetchLatestCurrencyRates() else {
+                print("Api call failed", #function)
                 return nil
             }
+            print("Api call completed", #function, Date().description)
             do {
+                print("save to db call started", #function)
                 try await coreDataManager.saveToDb(response: currencyRateResponse)
+                print("save to db call completed", #function)
                 return coreDataManager.fetchConversionRateMappings()
             }
             catch {
+                print("Exception!!! \(error.localizedDescription)", #function)
                 return nil
             }
         } else {
+            print("return cached data", #function)
             return currencyRates
         }
     }

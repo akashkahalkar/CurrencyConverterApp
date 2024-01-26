@@ -11,42 +11,49 @@ import SwiftUI
  
 struct SearchBar: View {
     @Binding var text: String
- 
-    @State private var isEditing = false
+    @State private var isEditing = true
+    @FocusState private var focusedField: Field?
     
     private enum Field: Int {
         case yourTextEdit
     }
 
-    @FocusState private var focusedField: Field?
- 
     var body: some View {
         HStack {
-            
             TextField("Search with country code ...", text: $text)
-                .padding(7)
-                .padding(.horizontal, 25)
-                .background(Color(.systemGray))
+                .padding(16)
+                .foregroundColor(.primary)
+                .background(.thinMaterial)
+                .background(Color.cyan.gradient.opacity(0.5))
                 .cornerRadius(8)
-                .padding(.horizontal, 10)
                 .focused($focusedField, equals: .yourTextEdit)
                 .onTapGesture {
                     self.isEditing = true
-                }
+                }.textFieldStyle(.plain)
             
             if isEditing {
+                
                 Button(action: {
-                    self.isEditing = false
                     self.text = ""
                     if focusedField != nil {
                         focusedField = nil
                     }
-                }) {
-                    Text("Cancel")
-                }
-                .padding(.trailing, 10)
-                .transition(.move(edge: .trailing))
+                    withAnimation {
+                        self.isEditing = false
+                    }
+                }, label: {
+                    Image(systemName: "xmark.circle").resizable().frame(width: 20, height: 20)
+                        .tint(.black.opacity(0.9))
+                        .padding()
+                        .background(.thinMaterial)
+                        .background(.red.opacity(0.5).gradient)
+                        .clipShape(Circle())
+                }).transition(.move(edge: .trailing))
             }
-        }
+        }.padding(.horizontal)
     }
+}
+
+#Preview {
+    SearchBar(text: .constant("Search here"))
 }

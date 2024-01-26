@@ -8,6 +8,11 @@
 import Foundation
 import SwiftUI
 
+struct CountryListPickerData {
+    var countryCode: String
+    var countryName: String
+}
+
 class ConversionDataSource {
     
     private var conversionMappings = [String: (countryName: String, conversionRate: Double)]()
@@ -15,7 +20,7 @@ class ConversionDataSource {
     private var timestamp: Double = 0
     private var license: String?
     private var disclaimer: String?
-    
+        
     init(
         mappings: [String: (String, Double)], 
         base: String,
@@ -59,8 +64,16 @@ extension ConversionDataSource {
             conversionMappings[code]?.countryName ?? ""
         }
         
-        func getCountryCodes() -> [String] {
-            return conversionMappings.keys.compactMap{ $0 }
+        func getCountryCodes() -> [CountryListPickerData] {
+            
+            let keys = Array(conversionMappings.keys)
+            var countryPickerList = [CountryListPickerData]()
+            keys.forEach { key in
+                if let name = conversionMappings[key]?.countryName {
+                    countryPickerList.append(CountryListPickerData(countryCode: key, countryName: name))
+                }
+            }
+            return countryPickerList
         }
         
         func getBase() -> String {

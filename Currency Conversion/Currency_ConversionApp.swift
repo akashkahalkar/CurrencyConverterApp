@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct Currency_ConversionApp: App {
-    
+
     var body: some Scene {
         WindowGroup {
             CurrencyConversionView(appId: AppConfigParser.appId)

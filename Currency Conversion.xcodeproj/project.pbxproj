@@ -163,7 +163,6 @@
 				4C286E9C2B5A761100969EEF /* Extensions */,
 				880106A6285463700012703D /* AppContants */,
 				884CE653285395D2003A5CD1 /* DatabaseLayer */,
-				884CE652285395BB003A5CD1 /* CoreDataModels */,
 				884CE65128539594003A5CD1 /* ViewModels */,
 				884CE6502853958F003A5CD1 /* Views */,
 				884CE64F28539584003A5CD1 /* Models */,
@@ -258,6 +257,7 @@
 		884CE653285395D2003A5CD1 /* DatabaseLayer */ = {
 			isa = PBXGroup;
 			children = (
+				884CE652285395BB003A5CD1 /* CoreDataModels */,
 				880106A12853D6520012703D /* DataController.swift */,
 			);
 			path = DatabaseLayer;

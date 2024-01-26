@@ -15,51 +15,44 @@ struct CurrencyConversionView: View {
     @State private var inputValue: String = ""
     @State private var amount: Double = 0
     
-    private enum Field: Int {
-        case yourTextEdit
-    }
-
-    @FocusState private var focusedField: Field?
-    
     init(appId: String) {
         viewModel = CurrencyConversionViewModel(appId: appId)
     }
     
     var body: some View {
-        if viewModel.isLoading {
-            ProgressView().padding()
-        } else if !(viewModel.errorMessage ?? "").isEmpty {
-            Text(Constants.ErrorMessages.somthingWentWrong).padding()
-        } else {
-            ZStack(alignment: .topLeading) {
-                Color(hex: "#171717").ignoresSafeArea()
-                getBackgroundView()
-                VStack {
-                    getInputView().padding()
-                    if amount > 0 {
-                        ConversionGridView(
-                            viewModel: ConversionGridViewModel(
-                                base: viewModel.base,
-                                dataSource: viewModel.dataSource,
-                                amount: amount
+        Group {
+            if viewModel.isLoading {
+                ProgressView().padding()
+            } else if !(viewModel.errorMessage ?? "").isEmpty {
+                Text(Constants.ErrorMessages.somthingWentWrong).padding()
+            } else {
+                ZStack(alignment: .topLeading) {
+                    Color(hex: "#171717").ignoresSafeArea()
+                    getBackgroundView()
+                    VStack {
+                        getInputView().padding(.horizontal)
+                        if amount > 0 {
+                            ConversionGridView(
+                                viewModel: ConversionGridViewModel(
+                                    base: viewModel.base,
+                                    dataSource: viewModel.dataSource,
+                                    amount: amount
+                                )
                             )
-                        )
-                    } else {
-                        Spacer()
+                        } else {
+                            Spacer()
+                        }
                     }
                 }
-            }
-            .onTapGesture {
-                if focusedField != nil {
-                    focusedField = nil
+                .onReceive(NotificationCenter.default.publisher(
+                    for: UIApplication.willEnterForegroundNotification)
+                ) { _ in
+                    //update if needed
+                    synceDataSourceIfNeeded()
                 }
             }
-            
-            .onReceive(NotificationCenter.default.publisher(
-                for: UIApplication.willEnterForegroundNotification)) { _ in
-                //update if needed
-                    synceDataSourceIfNeeded()
-            }
+        }.task {
+            viewModel.fetchData()
         }
     }
 }
@@ -96,61 +89,44 @@ extension CurrencyConversionView {
         let lastFetched = viewModel.dataSource.getLastFetchTimeStamp()
         // did not get chance to check this
         if (lastFetched + 1800) > currentDateTimeStamp {
+            print("Threshold breach for last sync, force synching")
             viewModel.fetchData(forceUpdate: true)
         }
     }
     
-     func getBackgroundView() -> some View {
-        VStack {
-            Circle()
-                .fill(Color(hex: "646FD4"))
-                .frame(height: 150).offset(x: -150, y: 150)
-            
-            Circle()
-                .fill(Color(hex: "B3E8E5"))
-                .frame(height: 200).offset(x: 200, y: 100)
-            
-            Circle()
-                .fill(Color(hex: "646FD4"))
-                .frame(height: 50).offset(x: -150, y: 100)
+    func getBackgroundView() -> some View {
+        GeometryReader { geometry in
+            VStack {
+                Circle()
+                    .fill(.blue.gradient)
+                    .frame(height: 150).offset(x: geometry.size.width - 100, y: 40)
+                
+                Circle()
+                    .fill(.red.gradient).offset(x: 200, y: 300)
+                    .frame(height: 200)
+                
+                Circle()
+                    .fill(.green.gradient)
+                    .frame(height: 80)
+            }
         }
     }
     
     func getPickerView() -> some View {
         HStack {
             Spacer()
-            Picker("", selection: $viewModel.base) {
-                ForEach(viewModel.dataSource.getCountryCodes()
-                    .compactMap({ $0 })
-                    .sorted(),
-                        id: \.self) {
-                    Text(viewModel.dataSource.getcountryName(code: $0))
+            Picker("Country Selection", selection: $viewModel.base) {
+                ForEach(viewModel.pickerData, id: \.countryCode) {
+                    Text($0.countryName)
                 }
-            }.labelsHidden().hidden().frame(width: 1)
-            Menu {
-                Picker("CountrySelection", selection: $viewModel.base) {
-                    ForEach(viewModel.dataSource.getCountryCodes()
-                        .compactMap({ $0 })
-                        .sorted(),
-                            id: \.self) {
-                        Text(viewModel.dataSource.getcountryName(code: $0))
-                    }
-                }.labelsHidden()
-            } label: {
-                Text(viewModel.selectedCountryName)
-                .font(.system(size: 12))
-                .foregroundColor(Color.white)
-                .padding(.vertical, 10)
             }
-            .tint(Color.white)
-            .foregroundColor(Color.mint)
-            .padding(.horizontal)
-            .background(Color.black.opacity(0.2))
-            .cornerRadius(16)
-            .padding(.horizontal)
-        }.padding(.vertical)
-            
-    }
+            .accentColor(.primary)
+                .background(.black.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .padding(.vertical)
+                .padding(.trailing)
+            }
+        }
     
     func getInputView() -> some View {
         VStack() {
@@ -161,23 +137,28 @@ extension CurrencyConversionView {
                     .font(.system(size: 12))
                     .padding(.horizontal)
                     .padding(.top, 8)
+                
             }
             HStack{
                 TextField("Input amount", text: $inputValue)
-                    .textFieldStyle(PlainTextFieldStyle())
+                    .frame(height: 40)
+                    .textFieldStyle(.plain)
                     .foregroundColor(.white.opacity(0.8))
-                    .padding(.horizontal)
-                    .focused($focusedField, equals: .yourTextEdit)
+                    .padding(.leading)
                     .keyboardType(.decimalPad)
                     .onChange(of: inputValue) { newValue in
                         let parseAmount = viewModel.parseAmount(newValue)
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            amount = parseAmount.amount ?? 0
-                            error = parseAmount.error
-                        }
+                        amount = parseAmount.amount ?? 0
+                        error = parseAmount.error
+                        print("amount received", Date().description)
+                    }.onTapGesture {
+                        print("View tapped", Date().description)
                     }
                 Text(viewModel.base).padding(.horizontal)
-            }.padding(.vertical).background(border).tint(Color.mint).padding(.horizontal)
+            }.padding(.vertical)
+                .background(border)
+                .tint(Color.mint)
+                .padding(.horizontal)
             if !error.isEmpty {
                 HStack {
                     Spacer()
@@ -190,22 +171,9 @@ extension CurrencyConversionView {
                         .font(.system(size: 12))
                 }.padding(.horizontal)
             }
-            HStack {
-                Text("Select Currrency").padding(.horizontal)
-                getPickerView()
-            }
-//            if let licenseURL = viewModel.dataSource.getLicenseURL() {
-//                addTermsAndCondition(l: licenseURL)
-//            }
-        }.background(.ultraThinMaterial)
+            getPickerView()
+        }.background(.ultraThinMaterial).background(Color.clear)
             .cornerRadius(16)
             .shadow(color: .black.opacity(0.4), radius: 10, x: 1, y: 1)
-    }
-    
-    func addTermsAndCondition(l: URL) -> some View {
-        HStack {
-            Link("License of Use", destination: l)
-            //Link("Disclaimer", destination: d)
-        }.padding(.bottom, 8)
     }
 }
