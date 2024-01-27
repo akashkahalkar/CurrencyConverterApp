@@ -15,6 +15,9 @@ class DataController: ObservableObject {
     var viewContext: NSManagedObjectContext {
         container.viewContext
     }
+    var backgroundContext: NSManagedObjectContext {
+        container.newBackgroundContext()
+    }
         
     private init() {
         container = NSPersistentContainer(name: "CurrencyConverterModel")
@@ -41,33 +44,57 @@ extension DataController {
             }
         }
         catch {
-            print(error.localizedDescription)
+            print(error.localizedDescription, #function)
         }
     }
     
     func saveToDb(response: ConversionRateResponse) async throws {
         
-        try await container.performBackgroundTask { context in
-            
-            self.deleteIfAlreadyPresent(context: context)
-            let conversionRateMapping = ConversionRateMapping(context: context)
-            conversionRateMapping.disclaimer = response.disclaimer
-            conversionRateMapping.license = response.license
-            conversionRateMapping.timestamp = response.timestamp
-            
-            response.rates.forEach { (countryCode, amount) in
-                let conversionRate = ConversionRates(context: context)
-                conversionRate.countryCode = countryCode
-                conversionRate.conversionRate = amount
-                conversionRateMapping.addToMapping(conversionRate)
+        let backgrounContext = backgroundContext
+        do {
+            try await backgroundContext.perform {
+                self.deleteIfAlreadyPresent(context: backgrounContext)
+                let conversionRateMapping = ConversionRateMapping(context: self.backgroundContext)
+                conversionRateMapping.disclaimer = response.disclaimer
+                conversionRateMapping.license = response.license
+                conversionRateMapping.timestamp = response.timestamp
+                
+                response.rates.forEach { (countryCode, amount) in
+                    let conversionRate = ConversionRates(context: self.backgroundContext)
+                    conversionRate.countryCode = countryCode
+                    conversionRate.conversionRate = amount
+                    conversionRateMapping.addToMapping(conversionRate)
+                }
+                try backgrounContext.save()
             }
-            do {
-                try context.save()
-            }
-            catch {
-                throw OERError.Database.failedToSave
-            }
+        } catch {
+            print(error.localizedDescription, #function)
         }
+        
+        
+        
+//        try await container.performBackgroundTask { context in
+//            
+//            self.deleteIfAlreadyPresent(context: context)
+//            let conversionRateMapping = ConversionRateMapping(context: context)
+//            conversionRateMapping.disclaimer = response.disclaimer
+//            conversionRateMapping.license = response.license
+//            conversionRateMapping.timestamp = response.timestamp
+//            
+//            response.rates.forEach { (countryCode, amount) in
+//                let conversionRate = ConversionRates(context: context)
+//                conversionRate.countryCode = countryCode
+//                conversionRate.conversionRate = amount
+//                conversionRateMapping.addToMapping(conversionRate)
+//            }
+//            do {
+//                try context.save()
+//            }
+//            catch {
+//                print(error.localizedDescription, #function)
+//                throw OERError.Database.failedToSave
+//            }
+//        }
     }
     
     func saveCountryNameMappingToDb(response: CountryCodeMapping) async throws {
@@ -84,22 +111,70 @@ extension DataController {
                 }
                 try self.viewContext.save()
             } catch {
-                print(error.localizedDescription)
+                print(error.localizedDescription, #function)
                 throw OERError.Database.failedToSave
             }
         }
     }
     
-    func fetchConversionRateMappings() -> ConversionRateMapping? {
-        let request = ConversionRateMapping.fetchRequest()
-        return try? viewContext.fetch(request).first
+    func fetchConversionRateMappings() async -> [String : Double] {
+        
+        let backgroundContext = backgroundContext
+        do {
+            let request = ConversionRateMapping.fetchRequest()
+            return try await backgroundContext.perform {
+                let object = try backgroundContext.fetch(request).first
+                return self.loadConversionRateMapping(object: object)
+            }
+        } catch {
+            print(error.localizedDescription, #function)
+            return [:]
+        }
     }
     
-    func fetchCountryNameMapping() -> [ContryCodeMapping] {
-        let request = ContryCodeMapping.fetchRequest()
-        let result = try? viewContext.fetch(request)
-        return result?.compactMap({ $0 }) ?? []
+    func fetchCountryNameMapping() async -> [String: String] {
+        let backgroundContext = backgroundContext
+        do {
+            return try await backgroundContext.perform {
+                let request = ContryCodeMapping.fetchRequest()
+                let objects = try backgroundContext.fetch(request).compactMap{$0}
+                return self.loadCountryNameMapping(objects: objects)
+            }
+        } catch {
+            print(error.localizedDescription, #function)
+            return [:]
+        }
     }
     
+    private func loadCountryNameMapping(objects: [ContryCodeMapping]) -> [String: String] {
+        
+        var map: [String: String] = [:]
+        
+        objects.forEach { ccm in
+            if let code = ccm.countryCode, let name = ccm.countryName  {
+                print(code, name)
+                map[code] =  name
+            }
+        }
+        return map
+    }
+    
+    private func loadConversionRateMapping(object: ConversionRateMapping?) -> [String: Double] {
+        
+        var rateMapping: [String: Double] = [:]
+        let conversionRates: [ConversionRates] = object?.mapping?.compactMap{$0 as? ConversionRates} ?? []
+        
+        guard !conversionRates.isEmpty else {
+            return [:]
+        }
+        
+        conversionRates.forEach { rate in
+            if let countryCode = rate.countryCode {
+                print(countryCode, rate.conversionRate)
+                rateMapping[countryCode] = rate.conversionRate
+            }
+        }
+        return rateMapping
+    }
 }
 

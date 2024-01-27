@@ -16,8 +16,7 @@ class CurrencyConversionViewModel: ObservableObject {
     private let manager: RequestManager
     private let coreDataManager: DataController
     
-    var dataSource = ConversionDataSource.empty
-    
+    @Published var dataSource = ConversionDataSource.empty    
     @Published var errorMessage: String?
     @Published var isLoading: Bool = true
     @Published var base = "USD"
@@ -27,50 +26,43 @@ class CurrencyConversionViewModel: ObservableObject {
         let urlManager = OERURLManager(appId)
         manager = RequestManager(manager: urlManager)
         coreDataManager = DataController.shared
-        //fetchData()
     }
 }
 
 extension CurrencyConversionViewModel {
-    func fetchData(forceUpdate: Bool = false) {
+    func fetchData(forceUpdate: Bool = false) async {
         
         isLoading = true
-        Task {
-            print("task started", Date().description, #function)
-            let nameData = await self.loadCountryNameMapings()
-            let rateData = await self.loadConversionRateMappings(forceUpdate: forceUpdate)
-            print("task completed", Date().description, #function)
-            
-            guard !nameData.isEmpty, let rateData else {
-                await MainActor.run {
-                    self.isLoading = false
-                    self.errorMessage = Constants.ErrorMessages.somthingWentWrong
-                    self.dataSource = ConversionDataSource.empty
-                }
-                return
-            }
-            
-            print("parsign started", Date().description, #function)
-            let mapping = self.loadMapping(nameData, rateData)
-            print("parsign completed", Date().description, #function)
-            let base = rateData.base ?? "USD"
-            let timestamp = rateData.timestamp
-            let license = rateData.license ?? ""
-            let disclaimer = rateData.disclaimer ?? ""
-            
-            DispatchQueue.main.async {
-                self.dataSource = ConversionDataSource(
-                    mappings: mapping,
-                    base: base,
-                    timestamp: timestamp,
-                    license: license,
-                    disclaimer: disclaimer)
-                self.base = base
-                self.pickerData = self.dataSource.getCountryCodes()
-                self.isLoading = false
-                self.errorMessage = ""
-            }
+        print("task started", Date().description, #function)
+        let nameData = await self.loadCountryNameMapings()
+        let rateData = await self.loadConversionRateMappings(forceUpdate: forceUpdate)
+        print("task completed", Date().description, #function)
+        
+        guard !nameData.isEmpty, !rateData.isEmpty else {
+            self.isLoading = false
+            self.errorMessage = Constants.ErrorMessages.somthingWentWrong
+            self.dataSource = ConversionDataSource.empty
+            return
         }
+        
+        print("parsign started", Date().description, #function)
+        let mapping = self.loadMapping(nameData, rateData)
+        print("parsign completed", Date().description, #function)
+//        let base = rateData.base ?? "USD"
+//        let timestamp = rateData.timestamp
+//        let license = rateData.license ?? ""
+//        let disclaimer = rateData.disclaimer ?? ""
+        
+        self.dataSource = ConversionDataSource(
+            mappings: mapping,
+            base: "USD",
+            timestamp: 0,
+            license: "license",
+            disclaimer: "disclaimer")
+        self.base = base
+        self.pickerData = self.dataSource.getCountryCodes()
+        self.isLoading = false
+        self.errorMessage = ""
     }
     
     func parseAmount(_ s: String) -> (amount: Double?, error: String) {
@@ -82,25 +74,26 @@ extension CurrencyConversionViewModel {
         }
     }
     
-    private func loadCountryNameMapings() async -> [ContryCodeMapping] {
+    private func loadCountryNameMapings() async -> [String : String] {
         /// check in core data for cached data
-        let countryCodeMappings = coreDataManager.fetchCountryNameMapping()
+        let countryCodeMappings = await coreDataManager.fetchCountryNameMapping()
         
         if countryCodeMappings.isEmpty {
             /// if no data is cached then make an API call
-            print("Api call completed", #function, Date().description)
+            print("Api call started", #function, Date().description)
             guard let response = await fetchCurrencies() else {
                 print("Api call failed", #function)
-                return []
+                return [:]
             }
             print("Api call completed", #function, Date().description)
             do {
                 /// saving to core Data
                 try await coreDataManager.saveCountryNameMappingToDb(response: response)
                 /// fetch and return from core data
-                return coreDataManager.fetchCountryNameMapping()
+                return await coreDataManager.fetchCountryNameMapping()
             } catch {
-                return []
+                print(error.localizedDescription, #function)
+                return [:]
             }
         } else {
             print("return cached data", #function)
@@ -108,28 +101,29 @@ extension CurrencyConversionViewModel {
         }
     }
     
-    private func loadConversionRateMappings(forceUpdate: Bool) async -> ConversionRateMapping? {
+    private func loadConversionRateMappings(forceUpdate: Bool) async -> [String: Double] {
         /// check core data for cached data
-        let currencyRates = coreDataManager.fetchConversionRateMappings()
+        let currencyRates = await coreDataManager.fetchConversionRateMappings()
         
-        if currencyRates == nil || forceUpdate == true {
+        if currencyRates.isEmpty || forceUpdate == true {
             /// if no data, or force sync due to last sync threshold breach
             print("Force sync", forceUpdate)
             print("Api call started", #function, Date().description)
             guard let currencyRateResponse = await fetchLatestCurrencyRates() else {
                 print("Api call failed", #function)
-                return nil
+                return [:]
             }
             print("Api call completed", #function, Date().description)
             do {
                 print("save to db call started", #function)
+                print("response", currencyRateResponse)
                 try await coreDataManager.saveToDb(response: currencyRateResponse)
                 print("save to db call completed", #function)
-                return coreDataManager.fetchConversionRateMappings()
+                return await coreDataManager.fetchConversionRateMappings()
             }
             catch {
                 print("Exception!!! \(error.localizedDescription)", #function)
-                return nil
+                return [:]
             }
         } else {
             print("return cached data", #function)
@@ -148,57 +142,20 @@ extension CurrencyConversionViewModel {
 }
 extension CurrencyConversionViewModel {
     // MARK: private function
-    private func loadCountryNameMapping(objects: [ContryCodeMapping]) -> [String: String] {
-        return mapToDictionary(countryNameArray: objects)
-    }
-    
-    private func loadConversionRateMapping(object: ConversionRateMapping?) -> [String: Double] {
-        guard let object = object else {
-            return [:]
-        }
-        return mapToDictionary(conversionRateData: object)
-    }
     
     private func loadMapping(
-        _ countryNameData: [ContryCodeMapping],
-        _ rateData: ConversionRateMapping
+        _ countryNameData: [String: String],
+        _ rateData: [String: Double]
     ) -> [String: (String, Double)] {
         
-        let countryNameMapping = self.loadCountryNameMapping(objects: countryNameData)
-        let conversionRateMapping = self.loadConversionRateMapping(object: rateData)
-    
         var mergedDictionary = [String: (String, Double)]()
-        for countryCode in Set(countryNameMapping.keys).intersection(conversionRateMapping.keys) {
+        for countryCode in Set(countryNameData.keys).intersection(rateData.keys) {
             // Get values from both dictionaries
-            if let name = countryNameMapping[countryCode], let value = conversionRateMapping[countryCode] {
+            if let name = countryNameData[countryCode], let value = rateData[countryCode] {
                 // Create a tuple and add it to the merged dictionary
                 mergedDictionary[countryCode] = (name, value)
             }
         }
         return mergedDictionary
-    }
-    
-    private func mapToDictionary(conversionRateData: ConversionRateMapping) -> [String: Double] {
-        var rateMapping: [String: Double] = [:]
-        let conversionRates: [ConversionRates] = conversionRateData
-            .mapping?
-            .compactMap({$0 as? ConversionRates}) ?? []
-        
-        conversionRates.forEach { rate in
-            if let countryCode = rate.countryCode {
-                rateMapping[countryCode] = rate.conversionRate
-            }
-        }
-        return rateMapping
-    }
-    
-    private func mapToDictionary(countryNameArray: [ContryCodeMapping]) -> [String: String] {
-        var map: [String: String] = [:]
-        countryNameArray.forEach { ccm in
-            if let code = ccm.countryCode {
-                map[code] = ccm.countryName ?? ""
-            }
-        }
-        return map
     }
 }

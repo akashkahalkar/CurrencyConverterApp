@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-
+@MainActor
 class ConversionGridViewModel: ObservableObject {
     
     @Published private var base: String
@@ -19,7 +19,6 @@ class ConversionGridViewModel: ObservableObject {
         self.base = base
         self.dataSource = dataSource
         self.amount = amount
-        print("Conversion vm init for amount", amount)
     }
 }
 

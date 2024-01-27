@@ -48,11 +48,13 @@ struct CurrencyConversionView: View {
                     for: UIApplication.willEnterForegroundNotification)
                 ) { _ in
                     //update if needed
-                    synceDataSourceIfNeeded()
+                    Task {
+                        await synceDataSourceIfNeeded()
+                    }
                 }
             }
         }.task {
-            viewModel.fetchData()
+            await viewModel.fetchData()
         }
     }
 }
@@ -84,13 +86,13 @@ extension CurrencyConversionView {
           )
       }
     
-    func synceDataSourceIfNeeded() {
+    func synceDataSourceIfNeeded() async {
         let currentDateTimeStamp = viewModel.dataSource.getCurrentDateTimeStamp()
         let lastFetched = viewModel.dataSource.getLastFetchTimeStamp()
         // did not get chance to check this
         if (lastFetched + 1800) > currentDateTimeStamp {
             print("Threshold breach for last sync, force synching")
-            viewModel.fetchData(forceUpdate: true)
+            await viewModel.fetchData(forceUpdate: true)
         }
     }
     

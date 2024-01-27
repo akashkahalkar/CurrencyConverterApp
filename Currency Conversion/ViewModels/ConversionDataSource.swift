@@ -40,10 +40,6 @@ class ConversionDataSource {
 }
 
 extension ConversionDataSource {
-    
-}
-
-extension ConversionDataSource {
         // MARK: public interfaces
     func getColor(currentCountryRate: Double, baseRate: Double, opacity: Double) -> Color {
             
@@ -73,7 +69,7 @@ extension ConversionDataSource {
                     countryPickerList.append(CountryListPickerData(countryCode: key, countryName: name))
                 }
             }
-            return countryPickerList
+            return countryPickerList.sorted { $0.countryName < $1.countryName }
         }
         
         func getBase() -> String {
