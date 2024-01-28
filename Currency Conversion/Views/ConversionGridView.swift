@@ -14,7 +14,6 @@ struct ConversionGridView: View {
     @State private var showToastOverlay = false
     
     init(viewModel: ConversionGridViewModel) {
-        print("Grid view init calling!")
         self.viewModel = viewModel
     }
     

@@ -33,10 +33,8 @@ extension CurrencyConversionViewModel {
     func fetchData(forceUpdate: Bool = false) async {
         
         isLoading = true
-        print("task started", Date().description, #function)
         let nameData = await self.loadCountryNameMapings()
         let rateData = await self.loadConversionRateMappings(forceUpdate: forceUpdate)
-        print("task completed", Date().description, #function)
         
         guard !nameData.isEmpty, !rateData.isEmpty else {
             self.isLoading = false
@@ -45,13 +43,7 @@ extension CurrencyConversionViewModel {
             return
         }
         
-        print("parsign started", Date().description, #function)
         let mapping = self.loadMapping(nameData, rateData)
-        print("parsign completed", Date().description, #function)
-//        let base = rateData.base ?? "USD"
-//        let timestamp = rateData.timestamp
-//        let license = rateData.license ?? ""
-//        let disclaimer = rateData.disclaimer ?? ""
         
         self.dataSource = ConversionDataSource(
             mappings: mapping,
@@ -80,12 +72,9 @@ extension CurrencyConversionViewModel {
         
         if countryCodeMappings.isEmpty {
             /// if no data is cached then make an API call
-            print("Api call started", #function, Date().description)
             guard let response = await fetchCurrencies() else {
-                print("Api call failed", #function)
                 return [:]
             }
-            print("Api call completed", #function, Date().description)
             do {
                 /// saving to core Data
                 try await coreDataManager.saveCountryNameMappingToDb(response: response)
@@ -96,7 +85,6 @@ extension CurrencyConversionViewModel {
                 return [:]
             }
         } else {
-            print("return cached data", #function)
             return countryCodeMappings
         }
     }
@@ -104,29 +92,19 @@ extension CurrencyConversionViewModel {
     private func loadConversionRateMappings(forceUpdate: Bool) async -> [String: Double] {
         /// check core data for cached data
         let currencyRates = await coreDataManager.fetchConversionRateMappings()
-        
-        if currencyRates.isEmpty || forceUpdate == true {
+        if currencyRates.isEmpty || forceUpdate {
             /// if no data, or force sync due to last sync threshold breach
-            print("Force sync", forceUpdate)
-            print("Api call started", #function, Date().description)
             guard let currencyRateResponse = await fetchLatestCurrencyRates() else {
-                print("Api call failed", #function)
                 return [:]
             }
-            print("Api call completed", #function, Date().description)
             do {
-                print("save to db call started", #function)
-                print("response", currencyRateResponse)
                 try await coreDataManager.saveToDb(response: currencyRateResponse)
-                print("save to db call completed", #function)
                 return await coreDataManager.fetchConversionRateMappings()
             }
             catch {
-                print("Exception!!! \(error.localizedDescription)", #function)
                 return [:]
             }
         } else {
-            print("return cached data", #function)
             return currencyRates
         }
     }

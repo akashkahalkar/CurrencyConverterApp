@@ -33,68 +33,48 @@ extension DataController {
     
     private func deleteIfAlreadyPresent(context: NSManagedObjectContext) {
         
-        let request = ConversionRateMapping.fetchRequest()
-        request.returnsObjectsAsFaults = false
-        
-        do {
-            var result = try context.fetch(request)
-            if !result.isEmpty {
-                result.removeAll()
-                try context.save()
+        context.performAndWait {
+            let request = ConversionRateMapping.fetchRequest()
+            request.returnsObjectsAsFaults = false
+            
+            do {
+                var result = try context.fetch(request)
+                if !result.isEmpty {
+                    result.removeAll()
+                    try context.save()
+                }
             }
-        }
-        catch {
-            print(error.localizedDescription, #function)
+            catch {
+                print(error.localizedDescription, #function)
+            }
         }
     }
     
     func saveToDb(response: ConversionRateResponse) async throws {
         
-        let backgrounContext = backgroundContext
+        var rateMappings = [String: Double]()
         do {
-            try await backgroundContext.perform {
-                self.deleteIfAlreadyPresent(context: backgrounContext)
-                let conversionRateMapping = ConversionRateMapping(context: self.backgroundContext)
+            return try await container.performBackgroundTask { context in
+                
+                self.deleteIfAlreadyPresent(context: context)
+                
+                let conversionRateMapping = ConversionRateMapping(context: context)
                 conversionRateMapping.disclaimer = response.disclaimer
                 conversionRateMapping.license = response.license
                 conversionRateMapping.timestamp = response.timestamp
                 
                 response.rates.forEach { (countryCode, amount) in
-                    let conversionRate = ConversionRates(context: self.backgroundContext)
+                    let conversionRate = ConversionRates(context: context)
                     conversionRate.countryCode = countryCode
                     conversionRate.conversionRate = amount
+                    rateMappings[countryCode] = amount
                     conversionRateMapping.addToMapping(conversionRate)
                 }
-                try backgrounContext.save()
+                try context.save()
             }
         } catch {
             print(error.localizedDescription, #function)
         }
-        
-        
-        
-//        try await container.performBackgroundTask { context in
-//            
-//            self.deleteIfAlreadyPresent(context: context)
-//            let conversionRateMapping = ConversionRateMapping(context: context)
-//            conversionRateMapping.disclaimer = response.disclaimer
-//            conversionRateMapping.license = response.license
-//            conversionRateMapping.timestamp = response.timestamp
-//            
-//            response.rates.forEach { (countryCode, amount) in
-//                let conversionRate = ConversionRates(context: context)
-//                conversionRate.countryCode = countryCode
-//                conversionRate.conversionRate = amount
-//                conversionRateMapping.addToMapping(conversionRate)
-//            }
-//            do {
-//                try context.save()
-//            }
-//            catch {
-//                print(error.localizedDescription, #function)
-//                throw OERError.Database.failedToSave
-//            }
-//        }
     }
     
     func saveCountryNameMappingToDb(response: CountryCodeMapping) async throws {
@@ -102,14 +82,11 @@ extension DataController {
         try await container.performBackgroundTask { context in
             do {
                 response.forEach { (key, value) in
-                    if let countryCodeMappings = NSEntityDescription.insertNewObject(
-                        forEntityName: "ContryCodeMapping",
-                        into: self.viewContext) as? ContryCodeMapping {
-                        countryCodeMappings.countryCode = key
-                        countryCodeMappings.countryName = value
-                    }
+                    let countryCodeMappings = ContryCodeMapping(context: context)
+                    countryCodeMappings.countryCode = key
+                    countryCodeMappings.countryName = value
                 }
-                try self.viewContext.save()
+                try context.save()
             } catch {
                 print(error.localizedDescription, #function)
                 throw OERError.Database.failedToSave
@@ -118,12 +95,10 @@ extension DataController {
     }
     
     func fetchConversionRateMappings() async -> [String : Double] {
-        
-        let backgroundContext = backgroundContext
         do {
-            let request = ConversionRateMapping.fetchRequest()
-            return try await backgroundContext.perform {
-                let object = try backgroundContext.fetch(request).first
+            return try await container.performBackgroundTask { context in
+                let request = ConversionRateMapping.fetchRequest()
+                let object = try context.fetch(request).first
                 return self.loadConversionRateMapping(object: object)
             }
         } catch {
@@ -133,11 +108,11 @@ extension DataController {
     }
     
     func fetchCountryNameMapping() async -> [String: String] {
-        let backgroundContext = backgroundContext
+
         do {
-            return try await backgroundContext.perform {
+            return try await container.performBackgroundTask { context in
                 let request = ContryCodeMapping.fetchRequest()
-                let objects = try backgroundContext.fetch(request).compactMap{$0}
+                let objects = try context.fetch(request).compactMap{$0}
                 return self.loadCountryNameMapping(objects: objects)
             }
         } catch {
@@ -148,33 +123,26 @@ extension DataController {
     
     private func loadCountryNameMapping(objects: [ContryCodeMapping]) -> [String: String] {
         
-        var map: [String: String] = [:]
-        
-        objects.forEach { ccm in
-            if let code = ccm.countryCode, let name = ccm.countryName  {
-                print(code, name)
-                map[code] =  name
+        return objects.reduce(into: [String: String]()) { partialResult, object in
+            if let code = object.countryCode, let name = object.countryName {
+                partialResult[code] = name
             }
         }
-        return map
     }
     
     private func loadConversionRateMapping(object: ConversionRateMapping?) -> [String: Double] {
         
-        var rateMapping: [String: Double] = [:]
         let conversionRates: [ConversionRates] = object?.mapping?.compactMap{$0 as? ConversionRates} ?? []
         
         guard !conversionRates.isEmpty else {
             return [:]
         }
         
-        conversionRates.forEach { rate in
-            if let countryCode = rate.countryCode {
-                print(countryCode, rate.conversionRate)
-                rateMapping[countryCode] = rate.conversionRate
+        return conversionRates.reduce(into: [String: Double]()) { partialResult, object in
+            if let code = object.countryCode {
+                partialResult[code] = object.conversionRate
             }
         }
-        return rateMapping
     }
 }
 
